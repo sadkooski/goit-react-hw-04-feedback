@@ -1,0 +1,14 @@
+* {
+  list-style: none;
+}
+
+.button {
+  font-size: 30px;
+  border-radius: 5px;
+  padding: 5px 20px;
+}
+
+.buttons-list {
+  display: flex;
+  gap: 20px;
+}
