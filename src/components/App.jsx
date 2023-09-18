@@ -4,7 +4,7 @@ import { Notification } from 'components/Notification/Notification';
 import { Section } from 'components/Section/Section';
 import React, { useState, useEffect } from 'react';
 
-export const App = () => {
+const App = () => {
   const [feedback, setFeedback] = useState({
     good: 0,
     neutral: 0,
@@ -13,47 +13,37 @@ export const App = () => {
     positiveFeedback: 0,
   });
 
-  useEffect(() => {
-    const countTotalFeedback = () => {
-      const { good, neutral, bad, total } = feedback;
-      setFeedback(prevFeedback => ({
-        ...prevFeedback,
-        total: good + neutral + bad,
-      }));
-    };
-  }, [feedback]);
+  const countTotalFeedback = () => {
+    setFeedback(prevFeedback => ({
+      ...prevFeedback,
+      total: prevFeedback.good + prevFeedback.neutral + prevFeedback.bad,
+    }));
+  };
 
   useEffect(() => {
     const countPositiveFeedbackPercentage = () => {
-      const { good, total, positiveFeedback } = feedback;
-
-      if (total > 1) {
+      if (feedback.total > 1) {
         setFeedback(prevFeedback => ({
           ...prevFeedback,
-          positiveFeedback: Math.ceil((good / total) * 100),
+          positiveFeedback: Math.ceil(
+            (prevFeedback.good / prevFeedback.total) * 100
+          ),
         }));
       }
     };
-  });
+
+    countTotalFeedback();
+    countPositiveFeedbackPercentage();
+  }, [feedback]);
 
   const buttonOnClick = e => {
     e.preventDefault();
     const variant = e.currentTarget.dataset.variant;
 
-    setFeedback(
-      prevFeedback => ({
-        ...prevFeedback,
-        [variant]: prevFeedback[variant] + 1,
-      }),
-      () => {
-        countPositiveFeedbackPercentage();
-        countTotalFeedback();
-      }
-    );
-  };
-  const notificationVisibility = () => {
-    const { total } = feedback;
-    return total === 0;
+    setFeedback(prevFeedback => ({
+      ...prevFeedback,
+      [variant]: prevFeedback[variant] + 1,
+    }));
   };
 
   return (
@@ -71,7 +61,7 @@ export const App = () => {
         <Section title="Please leave feedback"></Section>
         <FeedbackOptions onLeaveFeedback={buttonOnClick} />
         <Section title="Statistics"></Section>
-        {notificationVisibility() ? (
+        {feedback.total === 0 ? (
           <Notification message="There is no feedback" />
         ) : (
           <Statistics
@@ -86,3 +76,5 @@ export const App = () => {
     </div>
   );
 };
+
+export default App;
