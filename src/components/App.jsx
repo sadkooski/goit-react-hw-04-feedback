@@ -2,42 +2,26 @@ import { Statistics } from 'components/Statistics/Statistics';
 import { FeedbackOptions } from 'components/FeedbackOptions/FeedbackOptions';
 import { Notification } from 'components/Notification/Notification';
 import { Section } from 'components/Section/Section';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const App = () => {
   const [feedback, setFeedback] = useState({
     good: 0,
     neutral: 0,
     bad: 0,
-    total: 0,
-    positiveFeedback: 0,
   });
 
   const countTotalFeedback = () => {
-    setFeedback(prevFeedback => ({
-      ...prevFeedback,
-      total: prevFeedback.good + prevFeedback.neutral + prevFeedback.bad,
-    }));
+    return feedback.good + feedback.neutral + feedback.bad;
   };
 
-  useEffect(() => {
-    const countPositiveFeedbackPercentage = () => {
-      if (feedback.total > 1) {
-        setFeedback(prevFeedback => ({
-          ...prevFeedback,
-          positiveFeedback: Math.ceil(
-            (prevFeedback.good / prevFeedback.total) * 100
-          ),
-        }));
-      }
-    };
-
-    countTotalFeedback();
-    countPositiveFeedbackPercentage();
-  }, [feedback]);
+  const countPositiveFeedbackPercentage = () => {
+    if (countTotalFeedback() > 1) {
+      return Math.ceil((feedback.good / countTotalFeedback()) * 100);
+    }
+  };
 
   const buttonOnClick = e => {
-    e.preventDefault();
     const variant = e.currentTarget.dataset.variant;
 
     setFeedback(prevFeedback => ({
@@ -68,8 +52,8 @@ const App = () => {
             good={feedback.good}
             neutral={feedback.neutral}
             bad={feedback.bad}
-            total={feedback.total}
-            positivePercentage={feedback.positiveFeedback}
+            total={countTotalFeedback()}
+            positivePercentage={countPositiveFeedbackPercentage()}
           />
         )}
       </div>
